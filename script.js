@@ -1,11 +1,6 @@
 // 🔹 Import Firebase modules
 import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-import {
-  getDatabase,
-  ref,
-  onValue,
-  set
-} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -13,15 +8,15 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// 🔹 Firebase config (من Firebase Console → Project Settings)
+// 🔹 Firebase config (القيم تبعك)
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
   authDomain: "wateresppro.firebaseapp.com",
   databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "wateresppro",
   storageBucket: "wateresppro.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  messagingSenderId: "1085989558826",
+  appId: "1:1085989558826:web:34c0f35c7d063de4f12b96"
 };
 
 // 🔹 Initialize Firebase
@@ -48,12 +43,13 @@ loginBtn.addEventListener("click", () => {
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredential) => {
       const user = userCredential.user;
-      const uid = localStorage.getItem("boardUID");
-      if (!uid) {
-        alert("Please enter your board UID first!");
+      const boardUID = uidInput.value || localStorage.getItem("boardUID");
+      if (!boardUID) {
+        alert("Please enter your board UID!");
         return;
       }
-      loadWaterLevel(uid);
+      localStorage.setItem("boardUID", boardUID);
+      loadWaterLevel(boardUID);
       levelText.textContent = "Logged in! Loading water level...";
     })
     .catch((error) => {
@@ -101,10 +97,12 @@ function loadWaterLevel(uid) {
   onValue(levelRef, (snapshot) => {
     const level = snapshot.val();
     if (level !== null) {
-      water.style.height = `${level}%`;
-      levelText.textContent = `Water Level: ${level}%`;
+      const clamped = Math.max(0, Math.min(100, Number(level)));
+      water.style.height = `${clamped}%`;
+      levelText.textContent = `Water Level: ${clamped}%`;
     } else {
       levelText.textContent = "No data available";
+      water.style.height = "0%";
     }
   });
 }
@@ -117,6 +115,7 @@ onAuthStateChanged(auth, (user) => {
     const uid = localStorage.getItem("boardUID");
     if (uid) {
       loadWaterLevel(uid);
+      levelText.textContent = "Logged in! Loading water level...";
     } else {
       levelText.textContent = "Please enter your board UID";
     }
