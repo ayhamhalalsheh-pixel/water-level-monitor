@@ -5,16 +5,39 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Water Level Monitor</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- Firebase -->
   <script type="module" src="script.js"></script>
 </head>
 <body>
   <div class="container">
     <h1>💧 Water Level Monitor</h1>
+
+    <!-- 🔹 Login Form -->
+    <div class="login" id="login-section">
+      <input type="email" id="email" placeholder="Email" />
+      <input type="password" id="password" placeholder="Password" />
+      <button id="login-btn">Login / Register</button>
+    </div>
+
+    <!-- 🔹 User Info & Device UID -->
+    <div class="user-info" id="user-section" style="display:none;">
+      <p><strong>Account UID:</strong> <span id="uid-display"></span></p>
+
+      <div class="device-setup">
+        <label for="device-uid">Enter Device UID (from your ESP board):</label>
+        <input type="text" id="device-uid" placeholder="e.g. device123" />
+        <button id="save-device-btn">Save Device UID</button>
+        <p id="device-hint">No device saved yet.</p>
+      </div>
+
+      <button id="logout-btn">Logout</button>
+    </div>
+
+    <!-- 🔹 Tank -->
     <div class="tank">
       <div class="water" id="water"></div>
     </div>
-    <p id="level-text">Loading...</p>
+
+    <p id="level-text">Please log in to see your water level</p>
   </div>
 </body>
 </html>
