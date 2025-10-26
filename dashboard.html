@@ -1,20 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Water Level Dashboard</title>
-  <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A+ Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
   <script type="module" src="dashboard.js"></script>
 </head>
-<body>
-  <div class="container">
-    <h1>💧 Water Level Monitor</h1>
+<body class="dashboard-body">
+  <div class="header">
+    <h1 class="logo">A+</h1>
+    <button id="logout">Logout</button>
+  </div>
+
+  <div class="tank-container">
     <div class="tank">
-      <div class="water" id="water"></div>
+      <div class="wave" id="wave1"></div>
+      <div class="wave" id="wave2"></div>
+      <div class="percentage" id="percentage">--%</div>
     </div>
-    <p id="level-text">Loading...</p>
-    <button id="logout-btn">Logout</button>
+    <p class="tank-label">Current Water Level</p>
   </div>
 </body>
 </html>
