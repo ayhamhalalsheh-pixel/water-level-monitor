@@ -8,7 +8,7 @@ import {
   onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
-// 🔹 Firebase config (القيم تبعك)
+// 🔹 Firebase config (القيم اللي انت اعطيتها)
 const firebaseConfig = {
   apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
   authDomain: "wateresppro.firebaseapp.com",
@@ -19,7 +19,6 @@ const firebaseConfig = {
   appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
   measurementId: "G-CY55LPRKHF"
 };
-
 
 // 🔹 Initialize Firebase
 const app = initializeApp(firebaseConfig);
@@ -55,6 +54,7 @@ loginBtn.addEventListener("click", () => {
       levelText.textContent = "Logged in! Loading water level...";
     })
     .catch((error) => {
+      console.error(error);
       alert("Login failed: " + error.message);
     });
 });
@@ -87,6 +87,7 @@ signupBtn.addEventListener("click", () => {
       loadWaterLevel(boardUID);
     })
     .catch((error) => {
+      console.error(error);
       alert("Sign up failed: " + error.message);
     });
 });
