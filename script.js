@@ -14,10 +14,12 @@ const firebaseConfig = {
   authDomain: "wateresppro.firebaseapp.com",
   databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "wateresppro",
-  storageBucket: "wateresppro.appspot.com",
-  messagingSenderId: "1085989558826",
-  appId: "1:1085989558826:web:34c0f35c7d063de4f12b96"
+  storageBucket: "wateresppro.firebasestorage.app",
+  messagingSenderId: "342671515655",
+  appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
+  measurementId: "G-CY55LPRKHF"
 };
+
 
 // 🔹 Initialize Firebase
 const app = initializeApp(firebaseConfig);
