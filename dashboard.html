@@ -93,9 +93,9 @@
   <button class="logout-btn" onclick="logout()">Logout</button>
 
   <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
@@ -112,25 +112,45 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
-    // Get UID from localStorage
-    const uid = localStorage.getItem("uid");
+    // 🔹 الحصول على UID من localStorage أو من الرابط
+    let uid = localStorage.getItem("uid");
+    if (!uid) {
+      const params = new URLSearchParams(window.location.search);
+      uid = params.get("uid");
+      if (uid) localStorage.setItem("uid", uid);
+    }
+
     const waterLevelElement = document.getElementById("waterLevel");
 
+    // 🔹 جلب قيمة WaterLevel من Firebase
     if (uid) {
-  const waterRef = ref(database, `users/${uid}/waterLevel`);
-  get(waterRef)
-    .then(snapshot => {
-      if (snapshot.exists()) {
-        const value = snapshot.val();
-        waterLevelElement.textContent = `${value}%`;
-      } else {
-        waterLevelElement.textContent = "--%";
-      }
-    })
-    .catch(error => {
-      console.error("Error reading water level:", error);
+      const waterRef = ref(database, `users/${uid}/waterLevel`);
+      get(waterRef)
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const value = snapshot.val();
+            waterLevelElement.textContent = `${value}%`;
+          } else {
+            waterLevelElement.textContent = "--%";
+          }
+        })
+        .catch(error => {
+          console.error("Error reading water level:", error);
+          waterLevelElement.textContent = "--%";
+        });
+    } else {
       waterLevelElement.textContent = "--%";
-    });
-} else {
-  waterLevelElement.textContent = "--%";
-}
+    }
+
+    // 🔹 logout
+    function logout() {
+      signOut(auth).then(() => {
+        localStorage.removeItem("uid");
+        window.location.href = "index.html";
+      });
+    }
+
+    window.logout = logout;
+  </script>
+</body>
+</html>
