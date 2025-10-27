@@ -117,7 +117,8 @@
     const waterLevelElement = document.getElementById("waterLevel");
 
     if (uid) {
-      const waterRef = ref(database, `${uid}/WaterLevel`);
+      const waterRef = ref(database, `users/${uid}/waterLevel`);
+
       get(waterRef)
         .then(snapshot => {
           if (snapshot.exists()) {
