@@ -117,25 +117,20 @@
     const waterLevelElement = document.getElementById("waterLevel");
 
     if (uid) {
-      const waterRef = ref(database, `users/${uid}/waterLevel`);
-
-      get(waterRef)
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const value = snapshot.val();
-            waterLevelElement.textContent = `${value}%`;
-          } else {
-            waterLevelElement.textContent = "--%";
-          }
-        })
-        .catch(error => {
-          console.error("Error reading water level:", error);
-          waterLevelElement.textContent = "--%";
-        });
-    } else {
+  const waterRef = ref(database, `users/${uid}/waterLevel`);
+  get(waterRef)
+    .then(snapshot => {
+      if (snapshot.exists()) {
+        const value = snapshot.val();
+        waterLevelElement.textContent = `${value}%`;
+      } else {
+        waterLevelElement.textContent = "--%";
+      }
+    })
+    .catch(error => {
+      console.error("Error reading water level:", error);
       waterLevelElement.textContent = "--%";
-    }
-
-    function logout() {
-      signOut(auth).then(() => {
-        loca
+    });
+} else {
+  waterLevelElement.textContent = "--%";
+}
