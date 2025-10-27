@@ -4,101 +4,10 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>A+ Dashboard</title>
-<style>
-  body {
-    margin: 0;
-    height: 100vh;
-    background: linear-gradient(180deg, #002b5b, #005792);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: "Poppins", sans-serif;
-    overflow: hidden;
-    color: white;
-  }
-
-  h1 {
-    position: absolute;
-    top: 20px;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #87cefa;
-    letter-spacing: 3px;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-  }
-
-  .waterball-container {
-    position: relative;
-    width: 250px;
-    height: 250px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.1);
-    box-shadow: 0 0 30px rgba(0,0,0,0.3);
-    overflow: hidden;
-  }
-
-  .water-mask {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 0%; /* سيتم تعديلها بالـ JS حسب الرقم */
-    overflow: hidden;
-    border-radius: 50%;
-  }
-
-  .wave {
-    position: absolute;
-    bottom: 0;
-    width: 200%;
-    height: 200%;
-    background: #87cefa;
-    border-radius: 35%;
-    animation: wave 10s infinite linear;
-  }
-
-  .wave:nth-child(2) {
-    background: #00bfff;
-    opacity: 0.6;
-    animation-delay: -5s;
-  }
-
-  @keyframes wave {
-    0% { transform: translateX(-25%) translateY(0) rotate(0deg); }
-    50% { transform: translateX(-20%) translateY(5%) rotate(180deg); }
-    100% { transform: translateX(-25%) translateY(0) rotate(360deg); }
-  }
-
-  .percentage {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #ffffff;
-    text-shadow: 0 0 12px rgba(0,0,0,0.5);
-  }
-
-  .logout-btn {
-    margin-top: 20px;
-    padding: 10px 25px;
-    border: none;
-    background: #87cefa;
-    color: #002b5b;
-    font-size: 1rem;
-    font-weight: bold;
-    border-radius: 10px;
-    cursor: pointer;
-    transition: 0.3s;
-  }
-
-  .logout-btn:hover {
-    background: #b0e0e6;
-  }
-</style>
+<link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
 <h1>A+</h1>
 
 <div class="waterball-container">
@@ -111,72 +20,6 @@
 
 <button class="logout-btn" onclick="logout()">Logout</button>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
-  import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
-    authDomain: "wateresppro.firebaseapp.com",
-    databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
-    projectId: "wateresppro",
-    storageBucket: "wateresppro.firebasedestorage.app",
-    messagingSenderId: "342671515655",
-    appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
-    measurementId: "G-CY55LPRKHF"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const database = getDatabase(app);
-  const auth = getAuth(app);
-
-  const waterLevelElement = document.getElementById("waterLevel");
-  const waterMask = document.querySelector(".water-mask");
-
-  // 🔹 Get UID from localStorage or URL
-  let uid = localStorage.getItem("uid");
-  if (!uid) {
-    const params = new URLSearchParams(window.location.search);
-    uid = params.get("uid");
-    if (uid) localStorage.setItem("uid", uid);
-  }
-
-  function updateWaterLevel(level) {
-    waterLevelElement.textContent = `${level}%`;
-    // ارتفاع الماء متناسب مع الرقم
-    waterMask.style.height = `${level}%`; // 0% → منخفض، 100% → كامل
-  }
-
-  // 🔹 Real-time listener
-  if (uid) {
-    const waterRef = ref(database, `users/${uid}/waterLevel`);
-    onValue(waterRef, (snapshot) => {
-      if (snapshot.exists()) {
-        updateWaterLevel(snapshot.val());
-      } else {
-        waterLevelElement.textContent = "--%";
-        waterMask.style.height = "0%";
-      }
-    }, (error) => {
-      console.error("Firebase read error:", error);
-      waterLevelElement.textContent = "--%";
-      waterMask.style.height = "0%";
-    });
-  } else {
-    waterLevelElement.textContent = "--%";
-    waterMask.style.height = "0%";
-  }
-
-  // 🔹 logout
-  function logout() {
-    signOut(auth).then(() => {
-      localStorage.removeItem("uid");
-      window.location.href = "index.html";
-    });
-  }
-  window.logout = logout;
-
-</script>
+<script type="module" src="script.js"></script>
 </body>
 </html>
