@@ -111,7 +111,7 @@
     authDomain: "wateresppro.firebaseapp.com",
     databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
     projectId: "wateresppro",
-    storageBucket: "wateresppro.firebasestorage.app",
+    storageBucket: "wateresppro.firebasedestorage.app",
     messagingSenderId: "342671515655",
     appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
     measurementId: "G-CY55LPRKHF"
@@ -133,12 +133,15 @@
 
   function updateWaterLevel(level) {
     waterLevelElement.textContent = `${level}%`;
+
     const container = document.querySelector(".waterball-container");
     const waves = container.querySelectorAll(".wave");
-    // يحرك الموجة حسب الرقم، 0% يكون منخفض قليلاً، 100% يكون أعلى
+
+    // ارتفاع الماء متناسب مع الرقم
     const minBottom = -50; // منخفض عند 0%
     const maxBottom = 0;   // أعلى عند 100%
     const bottomValue = minBottom + (level / 100) * (maxBottom - minBottom);
+
     waves.forEach(w => w.style.bottom = `${bottomValue}px`);
   }
 
@@ -167,7 +170,6 @@
     });
   }
   window.logout = logout;
-
 </script>
 </body>
 </html>
