@@ -103,7 +103,7 @@
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
     import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
     const firebaseConfig = {
@@ -122,6 +122,8 @@
     const auth = getAuth(app);
 
     const waterLevelElement = document.getElementById("waterLevel");
+    const container = document.querySelector(".waterball-container");
+    const waves = container.querySelectorAll(".wave");
 
     // 🔹 Get UID from localStorage or URL
     let uid = localStorage.getItem("uid");
@@ -132,32 +134,31 @@
     }
 
     function updateWaterLevel(level) {
-      waterLevelElement.textContent = `${level}%`;
-      const container = document.querySelector(".waterball-container");
-      const waves = container.querySelectorAll(".wave");
-      waves.forEach(w => {
-        w.style.bottom = `${-50 + level*2.5}px`; // يحرك الماء حسب النسبة
-      });
+      if (level === null || level === undefined) {
+        waterLevelElement.textContent = "--%";
+        waves.forEach(w => w.style.bottom = "0%");
+      } else {
+        waterLevelElement.textContent = `${level}%`;
+        const height = level; // ارتفاع الماء بالنسبة المئوية
+        waves.forEach(w => w.style.bottom = `${height}%`);
+      }
     }
 
-    // 🔹 Fetch water level from Firebase
+    // 🔹 Real-time listener
     if (uid) {
       const waterRef = ref(database, `users/${uid}/waterLevel`);
-      get(waterRef)
-        .then(snapshot => {
-          if (snapshot.exists()) {
-            const value = snapshot.val();
-            updateWaterLevel(value);
-          } else {
-            waterLevelElement.textContent = "--%";
-          }
-        })
-        .catch(error => {
-          console.error("Error reading water level:", error);
-          waterLevelElement.textContent = "--%";
-        });
+      onValue(waterRef, snapshot => {
+        if (snapshot.exists()) {
+          updateWaterLevel(snapshot.val());
+        } else {
+          updateWaterLevel(null);
+        }
+      }, error => {
+        console.error("Firebase read error:", error);
+        updateWaterLevel(null);
+      });
     } else {
-      waterLevelElement.textContent = "--%";
+      updateWaterLevel(null);
     }
 
     function logout() {
