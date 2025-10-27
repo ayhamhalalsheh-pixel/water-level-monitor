@@ -38,6 +38,15 @@
     overflow: hidden;
   }
 
+  .water-mask {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    height: 0%; /* سيتم تعديلها بالـ JS حسب الرقم */
+    overflow: hidden;
+    border-radius: 50%;
+  }
+
   .wave {
     position: absolute;
     bottom: 0;
@@ -46,7 +55,6 @@
     background: #87cefa;
     border-radius: 35%;
     animation: wave 10s infinite linear;
-    transform: translateX(-25%) translateY(0);
   }
 
   .wave:nth-child(2) {
@@ -94,8 +102,10 @@
 <h1>A+</h1>
 
 <div class="waterball-container">
-  <div class="wave"></div>
-  <div class="wave"></div>
+  <div class="water-mask">
+    <div class="wave"></div>
+    <div class="wave"></div>
+  </div>
   <div class="percentage" id="waterLevel">--%</div>
 </div>
 
@@ -122,6 +132,7 @@
   const auth = getAuth(app);
 
   const waterLevelElement = document.getElementById("waterLevel");
+  const waterMask = document.querySelector(".water-mask");
 
   // 🔹 Get UID from localStorage or URL
   let uid = localStorage.getItem("uid");
@@ -133,16 +144,8 @@
 
   function updateWaterLevel(level) {
     waterLevelElement.textContent = `${level}%`;
-
-    const container = document.querySelector(".waterball-container");
-    const waves = container.querySelectorAll(".wave");
-
     // ارتفاع الماء متناسب مع الرقم
-    const minBottom = -50; // منخفض عند 0%
-    const maxBottom = 0;   // أعلى عند 100%
-    const bottomValue = minBottom + (level / 100) * (maxBottom - minBottom);
-
-    waves.forEach(w => w.style.bottom = `${bottomValue}px`);
+    waterMask.style.height = `${level}%`; // 0% → منخفض، 100% → كامل
   }
 
   // 🔹 Real-time listener
@@ -153,13 +156,16 @@
         updateWaterLevel(snapshot.val());
       } else {
         waterLevelElement.textContent = "--%";
+        waterMask.style.height = "0%";
       }
     }, (error) => {
       console.error("Firebase read error:", error);
       waterLevelElement.textContent = "--%";
+      waterMask.style.height = "0%";
     });
   } else {
     waterLevelElement.textContent = "--%";
+    waterMask.style.height = "0%";
   }
 
   // 🔹 logout
@@ -170,6 +176,7 @@
     });
   }
   window.logout = logout;
+
 </script>
 </body>
 </html>
