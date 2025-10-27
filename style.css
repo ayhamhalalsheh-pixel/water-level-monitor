@@ -1,65 +1,43 @@
-/* ===== Dashboard (NEW) ===== 
-.dashboard-body {
-  background: radial-gradient(circle at bottom, #023e8a, #03045e);
-  color: #fff;
-  text-align: center;
+body {
+  margin: 0;
   height: 100vh;
-  overflow: hidden;
-  font-family: "Poppins", sans-serif;
-}
-
-
-.header {
+  background: linear-gradient(180deg, #002b5b, #005792);
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
   align-items: center;
-  padding: 25px 60px;
-}
-
-.logo {
-  font-size: 3rem;
-  font-weight: 700;
-  background: linear-gradient(135deg, #90e0ef, #0077b6, #023e8a);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  text-shadow: 0 0 25px rgba(0, 183, 255, 0.4);
-  font-family: "Trebuchet MS", sans-serif;
-}
-
-#logout {
-  background: #0077b6;
-  border: none;
-  border-radius: 12px;
-  padding: 10px 20px;
+  justify-content: center;
+  font-family: "Poppins", sans-serif;
+  overflow: hidden;
   color: white;
-  cursor: pointer;
-  font-weight: 600;
-  font-size: 1rem;
-  transition: 0.3s ease;
 }
 
-#logout:hover {
-  background: #0096c7;
-  transform: scale(1.05);
+h1 {
+  position: absolute;
+  top: 20px;
+  font-size: 2.5rem;
+  font-weight: 700;
+  color: #87cefa;
+  letter-spacing: 3px;
+  text-shadow: 0 0 10px rgba(255,255,255,0.3);
 }
 
-
-.sphere-container {
-  margin-top: 60px;
-}
-
-.water-sphere {
+.waterball-container {
+  position: relative;
   width: 250px;
   height: 250px;
-  margin: 0 auto;
   border-radius: 50%;
+  background: rgba(255,255,255,0.1);
+  box-shadow: 0 0 30px rgba(0,0,0,0.3);
   overflow: hidden;
-  position: relative;
-  background: radial-gradient(circle at 30% 30%, #00b4d8, #0077b6 80%);
-  box-shadow:
-    inset 0 0 40px rgba(255,255,255,0.3),
-    0 0 60px rgba(0,150,255,0.4),
-    0 0 120px rgba(0,100,255,0.2);
+}
+
+.water-mask {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 0%;
+  overflow: hidden;
+  border-radius: 50%;
 }
 
 .wave {
@@ -67,64 +45,47 @@
   bottom: 0;
   width: 200%;
   height: 200%;
-  background: rgba(173, 232, 244, 0.9);
+  background: #87cefa;
   border-radius: 35%;
-  transform: translateX(-25%);
-  animation: waveMotion 6s infinite linear;
+  animation: wave 10s infinite linear;
 }
 
-.sphere-wave1 {
-  opacity: 0.7;
+.wave:nth-child(2) {
+  background: #00bfff;
+  opacity: 0.6;
+  animation-delay: -5s;
 }
 
-.sphere-wave2 {
-  opacity: 0.5;
-  animation-delay: -3s;
+@keyframes wave {
+  0% { transform: translateX(-25%) translateY(0) rotate(0deg); }
+  50% { transform: translateX(-20%) translateY(5%) rotate(180deg); }
+  100% { transform: translateX(-25%) translateY(0) rotate(360deg); }
 }
 
-@keyframes waveMotion {
-  0% { transform: translateX(-25%) rotate(0deg); }
-  100% { transform: translateX(-25%) rotate(360deg); }
-}
-
-.percent-text {
+.percentage {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  font-size: 3rem;
+  font-size: 2.5rem;
   font-weight: 700;
-  color: #fff;
-  text-shadow:
-    0 0 15px rgba(255,255,255,0.8),
-    0 0 30px rgba(0,255,255,0.4);
+  color: #ffffff;
+  text-shadow: 0 0 12px rgba(0,0,0,0.5);
 }
 
-.tank-label {
-  margin-top: 25px;
-  font-weight: 500;
-  font-size: 1.2rem;
-  color: #caf0f8;
-  letter-spacing: 1px;
+.logout-btn {
+  margin-top: 20px;
+  padding: 10px 25px;
+  border: none;
+  background: #87cefa;
+  color: #002b5b;
+  font-size: 1rem;
+  font-weight: bold;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
 }
 
-
-.dashboard-body::before, .dashboard-body::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(255,255,255,0.05), transparent 70%);
-  animation: backgroundWaves 20s infinite linear;
-  z-index: 0;
-}
-
-.dashboard-body::after {
-  animation-delay: -10s;
-}
-
-@keyframes backgroundWaves {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }*/
+.logout-btn:hover {
+  background: #b0e0e6;
 }
