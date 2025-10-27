@@ -19,6 +19,7 @@ const auth = getAuth(app);
 
 const waterLevelElement = document.getElementById("waterLevel");
 const waterMask = document.querySelector(".water-mask");
+const logoutBtn = document.getElementById("logoutBtn");
 
 // 🔹 Get UID from localStorage or URL
 let uid = localStorage.getItem("uid");
@@ -29,8 +30,13 @@ if (!uid) {
 }
 
 function updateWaterLevel(level) {
-  waterLevelElement.textContent = `${level}%`;
-  waterMask.style.height = `${level}%`; // ارتفاع الماء يتناسب مع الرقم
+  if (level === null || level === undefined) {
+    waterLevelElement.textContent = "--%";
+    waterMask.style.height = "0%";
+  } else {
+    waterLevelElement.textContent = `${level}%`;
+    waterMask.style.height = `${level}%`;
+  }
 }
 
 // 🔹 Real-time listener
@@ -40,24 +46,20 @@ if (uid) {
     if (snapshot.exists()) {
       updateWaterLevel(snapshot.val());
     } else {
-      waterLevelElement.textContent = "--%";
-      waterMask.style.height = "0%";
+      updateWaterLevel(null);
     }
   }, (error) => {
     console.error("Firebase read error:", error);
-    waterLevelElement.textContent = "--%";
-    waterMask.style.height = "0%";
+    updateWaterLevel(null);
   });
 } else {
-  waterLevelElement.textContent = "--%";
-  waterMask.style.height = "0%";
+  updateWaterLevel(null);
 }
 
 // 🔹 logout
-function logout() {
+logoutBtn.addEventListener("click", () => {
   signOut(auth).then(() => {
     localStorage.removeItem("uid");
     window.location.href = "index.html";
   });
-}
-window.logout = logout;
+});
