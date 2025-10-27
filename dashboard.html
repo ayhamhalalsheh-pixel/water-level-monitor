@@ -28,13 +28,13 @@
       text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
     }
 
-    .container {
+    .waterball-container {
       position: relative;
-      width: 220px;
-      height: 220px;
+      width: 250px;
+      height: 250px;
       border-radius: 50%;
-      background: rgba(255, 255, 255, 0.1);
-      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
       overflow: hidden;
     }
 
@@ -43,10 +43,16 @@
       bottom: 0;
       width: 200%;
       height: 200%;
-      background: rgba(173, 216, 230, 0.7);
+      background: #87cefa;
       border-radius: 35%;
       animation: wave 4s infinite linear;
-      transform: translateX(-25%);
+      transform: translateX(-25%) translateY(0);
+    }
+
+    .wave:nth-child(2) {
+      background: #00bfff;
+      opacity: 0.6;
+      animation-delay: -2s;
     }
 
     @keyframes wave {
@@ -63,7 +69,7 @@
       font-size: 2.5rem;
       font-weight: 700;
       color: #ffffff;
-      text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+      text-shadow: 0 0 12px rgba(0,0,0,0.5);
     }
 
     .logout-btn {
@@ -86,10 +92,13 @@
 </head>
 <body>
   <h1>A+</h1>
-  <div class="container">
+
+  <div class="waterball-container">
+    <div class="wave"></div>
     <div class="wave"></div>
     <div class="percentage" id="waterLevel">--%</div>
   </div>
+
   <button class="logout-btn" onclick="logout()">Logout</button>
 
   <script type="module">
@@ -112,7 +121,9 @@
     const database = getDatabase(app);
     const auth = getAuth(app);
 
-    // 🔹 الحصول على UID من localStorage أو من الرابط
+    const waterLevelElement = document.getElementById("waterLevel");
+
+    // 🔹 Get UID from localStorage or URL
     let uid = localStorage.getItem("uid");
     if (!uid) {
       const params = new URLSearchParams(window.location.search);
@@ -120,16 +131,23 @@
       if (uid) localStorage.setItem("uid", uid);
     }
 
-    const waterLevelElement = document.getElementById("waterLevel");
+    function updateWaterLevel(level) {
+      waterLevelElement.textContent = `${level}%`;
+      const container = document.querySelector(".waterball-container");
+      const waves = container.querySelectorAll(".wave");
+      waves.forEach(w => {
+        w.style.bottom = `${-50 + level*2.5}px`; // يحرك الماء حسب النسبة
+      });
+    }
 
-    // 🔹 جلب قيمة WaterLevel من Firebase
+    // 🔹 Fetch water level from Firebase
     if (uid) {
       const waterRef = ref(database, `users/${uid}/waterLevel`);
       get(waterRef)
         .then(snapshot => {
           if (snapshot.exists()) {
             const value = snapshot.val();
-            waterLevelElement.textContent = `${value}%`;
+            updateWaterLevel(value);
           } else {
             waterLevelElement.textContent = "--%";
           }
@@ -142,14 +160,12 @@
       waterLevelElement.textContent = "--%";
     }
 
-    // 🔹 logout
     function logout() {
       signOut(auth).then(() => {
         localStorage.removeItem("uid");
         window.location.href = "index.html";
       });
     }
-
     window.logout = logout;
   </script>
 </body>
