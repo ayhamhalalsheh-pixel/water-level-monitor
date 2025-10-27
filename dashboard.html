@@ -1,13 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Water Tank Dashboard</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A+ Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(180deg, #002b5b, #005792);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+      color: white;
+    }
+
+    h1 {
+      position: absolute;
+      top: 20px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #87cefa;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .container {
+      position: relative;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 200%;
+      background: rgba(173, 216, 230, 0.7);
+      border-radius: 35%;
+      animation: wave 4s infinite linear;
+      transform: translateX(-25%);
+    }
+
+    @keyframes wave {
+      0% { transform: translateX(-25%) translateY(0) rotate(0deg); }
+      50% { transform: translateX(-20%) translateY(5%) rotate(180deg); }
+      100% { transform: translateX(-25%) translateY(0) rotate(360deg); }
+    }
+
+    .percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .logout-btn {
+      margin-top: 20px;
+      padding: 10px 25px;
+      border: none;
+      background: #87cefa;
+      color: #002b5b;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #b0e0e6;
+    }
+  </style>
+</head>
+<body>
+  <h1>A+</h1>
+  <div class="container">
+    <div class="wave"></div>
+    <div class="percentage" id="waterLevel">--%</div>
+  </div>
+  <button class="logout-btn" onclick="logout()">Logout</button>
+
   <script type="module">
-    // Firebase imports
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
-    import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
@@ -21,106 +109,32 @@
     };
 
     const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
 
-    // ✅ Get UID from URL
-    const params = new URLSearchParams(window.location.search);
-    const uid = params.get("uid");
+    // Get UID from localStorage
+    const uid = localStorage.getItem("uid");
+    const waterLevelElement = document.getElementById("waterLevel");
 
-    // ✅ Listen for water level updates
-    const levelRef = ref(db, `${uid}/waterLevel`);
-    const percentageText = document.getElementById("percentage");
-
-    onValue(levelRef, (snapshot) => {
-      const value = snapshot.val();
-      if (value !== null) {
-        percentageText.textContent = value + "%";
-      } else {
-        percentageText.textContent = "--%";
-      }
-    });
-  </script>
-
-  <style>
-    body {
-      margin: 0;
-      height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: radial-gradient(circle at bottom, #001f3f, #00112b);
-      font-family: "Poppins", sans-serif;
-      color: white;
-      overflow: hidden;
+    if (uid) {
+      const waterRef = ref(database, `${uid}/WaterLevel`);
+      get(waterRef)
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const value = snapshot.val();
+            waterLevelElement.textContent = `${value}%`;
+          } else {
+            waterLevelElement.textContent = "--%";
+          }
+        })
+        .catch(error => {
+          console.error("Error reading water level:", error);
+          waterLevelElement.textContent = "--%";
+        });
+    } else {
+      waterLevelElement.textContent = "--%";
     }
 
-    /* Company logo */
-    .logo {
-      position: absolute;
-      top: 20px;
-      font-size: 2em;
-      font-weight: bold;
-      color: #00aaff;
-      letter-spacing: 3px;
-      text-shadow: 0 0 15px #0088cc;
-      font-family: "Segoe UI", sans-serif;
-    }
-
-    /* Water container */
-    .tank {
-      position: relative;
-      width: 200px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(circle at center, #0077ff 40%, #004488);
-      box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.4), 0 0 40px rgba(0, 150, 255, 0.3);
-      overflow: hidden;
-    }
-
-    /* Water animation */
-    .wave {
-      position: absolute;
-      bottom: 0;
-      width: 200%;
-      height: 200%;
-      background: rgba(173, 216, 230, 0.8);
-      border-radius: 40%;
-      animation: wave 4s infinite linear;
-    }
-
-    .wave:nth-child(2) {
-      background: rgba(135, 206, 250, 0.7);
-      animation-delay: -2s;
-    }
-
-    @keyframes wave {
-      0% { transform: translateX(0) translateY(0); }
-      50% { transform: translateX(-25%) translateY(10px); }
-      100% { transform: translateX(-50%) translateY(0); }
-    }
-
-    /* Percentage text */
-    #percentage {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 3em;
-      font-weight: bold;
-      color: white;
-      text-shadow: 0 0 10px rgba(255,255,255,0.8);
-    }
-  </style>
-</head>
-
-<body>
-  <div class="logo">A+</div>
-
-  <div class="tank">
-    <div class="wave"></div>
-    <div class="wave"></div>
-    <div id="percentage">--%</div>
-  </div>
-</body>
-</html>
+    function logout() {
+      signOut(auth).then(() => {
+        loca
