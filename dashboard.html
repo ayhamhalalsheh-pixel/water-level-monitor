@@ -1,25 +1,172 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>A+ Dashboard</title>
-<link rel="stylesheet" href="style.css" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>A+ Dashboard</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      background: linear-gradient(180deg, #002b5b, #005792);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      font-family: "Poppins", sans-serif;
+      overflow: hidden;
+      color: white;
+    }
+
+    h1 {
+      position: absolute;
+      top: 20px;
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #87cefa;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    }
+
+    .waterball-container {
+      position: relative;
+      width: 250px;
+      height: 250px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      box-shadow: 0 0 30px rgba(0,0,0,0.3);
+      overflow: hidden;
+    }
+
+    .wave {
+      position: absolute;
+      bottom: 0;
+      width: 200%;
+      height: 200%;
+      background: #87cefa;
+      border-radius: 35%;
+      animation: wave 4s infinite linear;
+      transform: translateX(-25%) translateY(0);
+    }
+
+    .wave:nth-child(2) {
+      background: #00bfff;
+      opacity: 0.6;
+      animation-delay: -2s;
+    }
+
+    @keyframes wave {
+      0% { transform: translateX(-25%) translateY(0) rotate(0deg); }
+      50% { transform: translateX(-20%) translateY(5%) rotate(180deg); }
+      100% { transform: translateX(-25%) translateY(0) rotate(360deg); }
+    }
+
+    .percentage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      text-shadow: 0 0 12px rgba(0,0,0,0.5);
+    }
+
+    .logout-btn {
+      margin-top: 20px;
+      padding: 10px 25px;
+      border: none;
+      background: #87cefa;
+      color: #002b5b;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .logout-btn:hover {
+      background: #b0e0e6;
+    }
+  </style>
 </head>
 <body>
+  <h1>A+</h1>
 
-<h1>A+</h1>
-
-<div class="waterball-container">
-  <div class="water-mask">
+  <div class="waterball-container">
     <div class="wave"></div>
     <div class="wave"></div>
+    <div class="percentage" id="waterLevel">--%</div>
   </div>
-  <div class="percentage" id="waterLevel">--%</div>
-</div>
 
-<button class="logout-btn" id="logoutBtn">Logout</button>
+  <button class="logout-btn" onclick="logout()">Logout</button>
 
-<script type="module" src="script.js"></script>
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-app.js";
+    import { getDatabase, ref, get } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-database.js";
+    import { getAuth, signOut } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBKw3ywJDtI6bdzXWgG5mKotsq0NlMvOdI",
+      authDomain: "wateresppro.firebaseapp.com",
+      databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
+      projectId: "wateresppro",
+      storageBucket: "wateresppro.firebasestorage.app",
+      messagingSenderId: "342671515655",
+      appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
+      measurementId: "G-CY55LPRKHF"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const database = getDatabase(app);
+    const auth = getAuth(app);
+
+    const waterLevelElement = document.getElementById("waterLevel");
+
+    // 🔹 Get UID from localStorage or URL
+    let uid = localStorage.getItem("uid");
+    if (!uid) {
+      const params = new URLSearchParams(window.location.search);
+      uid = params.get("uid");
+      if (uid) localStorage.setItem("uid", uid);
+    }
+
+    function updateWaterLevel(level) {
+      waterLevelElement.textContent = `${level}%`;
+      const container = document.querySelector(".waterball-container");
+      const waves = container.querySelectorAll(".wave");
+      waves.forEach(w => {
+        w.style.bottom = `${-50 + level*2.5}px`; // يحرك الماء حسب النسبة
+      });
+    }
+
+    // 🔹 Fetch water level from Firebase
+    if (uid) {
+      const waterRef = ref(database, `users/${uid}/waterLevel`);
+      get(waterRef)
+        .then(snapshot => {
+          if (snapshot.exists()) {
+            const value = snapshot.val();
+            updateWaterLevel(value);
+          } else {
+            waterLevelElement.textContent = "--%";
+          }
+        })
+        .catch(error => {
+          console.error("Error reading water level:", error);
+          waterLevelElement.textContent = "--%";
+        });
+    } else {
+      waterLevelElement.textContent = "--%";
+    }
+
+    function logout() {
+      signOut(auth).then(() => {
+        localStorage.removeItem("uid");
+        window.location.href = "index.html";
+      });
+    }
+    window.logout = logout;
+  </script>
 </body>
 </html>
