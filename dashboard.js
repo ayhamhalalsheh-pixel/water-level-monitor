@@ -7,37 +7,57 @@ const firebaseConfig = {
   authDomain: "wateresppro.firebaseapp.com",
   databaseURL: "https://wateresppro-default-rtdb.europe-west1.firebasedatabase.app",
   projectId: "wateresppro",
-  storageBucket: "wateresppro.firebasestorage.app",
+  storageBucket: "wateresppro.firebasedestorage.app",
   messagingSenderId: "342671515655",
   appId: "1:342671515655:web:8890c1e7d597dd9a460aa2",
   measurementId: "G-CY55LPRKHF"
 };
 
 const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const database = getDatabase(app);
 const auth = getAuth(app);
 
-const water = document.getElementById("water");
-const levelText = document.getElementById("level-text");
-const logoutBtn = document.getElementById("logout-btn");
+const waterLevelElement = document.getElementById("waterLevel");
+const waterMask = document.querySelector(".water-mask");
 
-// قراءة الـ UID من localStorage
-const uid = localStorage.getItem("boardUID");
-if (!uid) { levelText.textContent = "No UID found!"; throw new Error("UID missing"); }
+// 🔹 Get UID from localStorage or URL
+let uid = localStorage.getItem("uid");
+if (!uid) {
+  const params = new URLSearchParams(window.location.search);
+  uid = params.get("uid");
+  if (uid) localStorage.setItem("uid", uid);
+}
 
-// 🔹 تحديث مستوى الماء
-const levelRef = ref(db, `users/${uid}/waterLevel`);
-onValue(levelRef, snapshot => {
-  const level = snapshot.val();
-  const clamped = Math.max(0, Math.min(100, Number(level || 0)));
-  water.style.height = `${clamped}%`;
-  levelText.textContent = `Water Level: ${clamped}%`;
-});
+function updateWaterLevel(level) {
+  waterLevelElement.textContent = `${level}%`;
+  waterMask.style.height = `${level}%`; // ارتفاع الماء يتناسب مع الرقم
+}
 
-// 🔹 Logout
-logoutBtn.addEventListener("click", () => {
-  signOut(auth).then(() => {
-    localStorage.removeItem("boardUID");
-    window.location.href = "login.html";
+// 🔹 Real-time listener
+if (uid) {
+  const waterRef = ref(database, `users/${uid}/waterLevel`);
+  onValue(waterRef, (snapshot) => {
+    if (snapshot.exists()) {
+      updateWaterLevel(snapshot.val());
+    } else {
+      waterLevelElement.textContent = "--%";
+      waterMask.style.height = "0%";
+    }
+  }, (error) => {
+    console.error("Firebase read error:", error);
+    waterLevelElement.textContent = "--%";
+    waterMask.style.height = "0%";
   });
-});
+} else {
+  waterLevelElement.textContent = "--%";
+  waterMask.style.height = "0%";
+}
+
+// 🔹 logout
+function logout() {
+  signOut(auth).then(() => {
+    localStorage.removeItem("uid");
+    window.location.href = "index.html";
+  });
+}
+window.logout = logout;
