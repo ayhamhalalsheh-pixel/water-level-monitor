@@ -1,4 +1,4 @@
-/* ===== Dashboard (NEW) ===== */
+/* ===== Dashboard (NEW) ===== 
 .dashboard-body {
   background: radial-gradient(circle at bottom, #023e8a, #03045e);
   color: #fff;
@@ -8,7 +8,7 @@
   font-family: "Poppins", sans-serif;
 }
 
-/* شعار الشركة */
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -43,7 +43,7 @@
   transform: scale(1.05);
 }
 
-/* كرة الماء */
+
 .sphere-container {
   margin-top: 60px;
 }
@@ -108,7 +108,7 @@
   letter-spacing: 1px;
 }
 
-/* خلفية متحركة للأمواج */
+
 .dashboard-body::before, .dashboard-body::after {
   content: "";
   position: absolute;
@@ -126,5 +126,5 @@
 
 @keyframes backgroundWaves {
   0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  100% { transform: rotate(360deg); }*/
 }
